@@ -11,14 +11,16 @@ import UIKit
 extension SongTableViewController: UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        fetchItem(query: searchBar.text ?? "" )
+        performSearch(for: searchBar.text!)
         view.endEditing(true)
     }
+        
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.isEmpty {
-            fetchItem(query: "" )
-            view.endEditing(true)
-        }
+            items = []
+            tableView.reloadData()
+            view.endEditing(true)}
+        
     }
 }

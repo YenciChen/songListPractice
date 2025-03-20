@@ -25,5 +25,10 @@ class SongTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-
+    func configureCell(item: SongOfSearchResults,at index: Int) {
+        numberLabel.text = "\(index + 1)"
+        songNameLabel.text = item.trackName
+        singerLabel.text = item.artistName
+        songImageView.kf.setImage(with: item.artworkUrl100)
+    }
 }

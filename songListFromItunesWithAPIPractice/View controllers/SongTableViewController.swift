@@ -7,15 +7,18 @@
 
 import UIKit
 import Kingfisher
+import AVFoundation
 class SongTableViewController: UITableViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     
     var items = [SongOfSearchResults]()
-    var urlComponents = URLComponents(string: "https://itunes.apple.com/search")!
+    let player = AVPlayer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         searchBar.placeholder = "Search Music"
+        
+        
     }
     
     // MARK: - Table view data source
@@ -34,10 +37,7 @@ class SongTableViewController: UITableViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "\(SongTableViewCell.self)", for: indexPath) as! SongTableViewCell
         let item = items[indexPath.row]
-        cell.numberLabel.text = "\(indexPath.row)"
-        cell.songNameLabel.text = item.trackName
-        cell.singerLabel.text = item.artistName
-        cell.songImageView.kf.setImage(with: item.artworkUrl100)
+        cell.configureCell(item: item, at: indexPath.row)
         
         return cell
     }
@@ -46,80 +46,52 @@ class SongTableViewController: UITableViewController {
     
     
     //     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    //     }
+    //
     
-    func fetchItem(query: String) {
+    func performSearch(for queryname: String) {
         
-        var processedQuery = query
-        if processedQuery.contains("") {
-            processedQuery = processedQuery.replacingOccurrences(of: " ", with: "+")
-        }
-        
-        urlComponents.queryItems = [
-            URLQueryItem(name: "media", value: "music"),
-            URLQueryItem(name: "country", value: "tw"),
-            URLQueryItem(name: "term", value: "\(query)")
-        ]
-        print(urlComponents.url!)
-        
-        guard let url = urlComponents.url else {
-            DispatchQueue.main.async {
-                self.showErrorAlert(message: .errorURL)
-            }
-            return
-        }
-   
-        
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            
-            guard error == nil else {
-                DispatchQueue.main.async {
-                    self.showErrorAlert(message: .networkError)
-                }
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse,
-                  response.statusCode == 200 else {
-                DispatchQueue.main.async {
-                    self.showErrorAlert(message: .invalidResponse)
-                }
-                return
-            }
-            
-            guard let data else {
-                DispatchQueue.main.async {
-                    self.showErrorAlert(message: .serverError)
-                }
-                return
-            }
-            
-            let decoder = JSONDecoder()
+        Task {
             do {
-                let item = try decoder.decode(ItunesSearchResponse.self, from: data)
-                self.items = item.results
-                if self.items.isEmpty == false {
-                    print("noData")
-                }
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    self.showErrorAlert(message: .decodingError )
-                }
+                let itune = ITunesNetworkService()
+                let results = try await itune.fetchItem(query: queryname)
+                print(results)
+                self.items = results
+                
+                self.tableView.reloadData()
+            }catch {
+                print("error")
             }
-        }.resume()
+        }
+        
     }
-    
-    func showErrorAlert(message: ITunesSearchError ) {
+    func showErrorAlert(message: ITunesSearchError) {
         
         print(message)
         let alert = UIAlertController(title: "錯誤", message: nil, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "確定", style: .default))
-        present(alert, animated: true)
+        self.present(alert, animated: true)
+        
+    }
+    
+    
+    @IBAction func playSong(_ sender: UIButton) {
+        let point = sender.convert(CGPoint.zero, to: tableView)
+        if let indexPath = tableView.indexPathForRow(at: point) {
+            let item = items[indexPath.row]
+            let playeritem = AVPlayerItem(url: item.previewUrl)
+            player.replaceCurrentItem(with: playeritem)
+            player.play()
+            
+        }
+        
     }
 }
+
+
+
+
+
+
+
 
 

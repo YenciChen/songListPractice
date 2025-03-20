@@ -14,4 +14,6 @@ enum ITunesSearchError: String,Error {
     case invalidResponse  = "response有問題"
     case decodingError  = "解析有問題"
     case serverError  = "伺服器問題"
+    
 }
+
