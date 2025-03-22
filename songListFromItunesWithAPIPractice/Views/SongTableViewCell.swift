@@ -28,7 +28,7 @@ class SongTableViewCell: UITableViewCell {
     func configureCell(item: SongOfSearchResults,at index: Int) {
         numberLabel.text = "\(index + 1)"
         songNameLabel.text = item.trackName
-        singerLabel.text = item.artistName
+//        singerLabel.text = item.artistName
         songImageView.kf.setImage(with: item.artworkUrl100)
     }
 }

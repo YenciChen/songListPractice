@@ -8,6 +8,7 @@
 import UIKit
 import Kingfisher
 import AVFoundation
+
 class SongTableViewController: UITableViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     
@@ -18,9 +19,7 @@ class SongTableViewController: UITableViewController {
         super.viewDidLoad()
         searchBar.placeholder = "Search Music"
         
-        
-    }
-    
+            }
     // MARK: - Table view data source
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -42,11 +41,12 @@ class SongTableViewController: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    
     // MARK: - Navigation
-    
-    
-    //     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    //
     
     func performSearch(for queryname: String) {
         
@@ -58,8 +58,8 @@ class SongTableViewController: UITableViewController {
                 self.items = results
                 
                 self.tableView.reloadData()
-            }catch {
-                print("error")
+            }catch  {
+                print(error)
             }
         }
         
@@ -73,17 +73,14 @@ class SongTableViewController: UITableViewController {
         
     }
     
-    
     @IBAction func playSong(_ sender: UIButton) {
         let point = sender.convert(CGPoint.zero, to: tableView)
         if let indexPath = tableView.indexPathForRow(at: point) {
-            let item = items[indexPath.row]
-            let playeritem = AVPlayerItem(url: item.previewUrl)
-            player.replaceCurrentItem(with: playeritem)
-            player.play()
-            
+//            let item = items[indexPath.row]
+//            let playeritem = AVPlayerItem(url: item.previewUrl)
+//            player.replaceCurrentItem(with: playeritem)
+//            player.play()
         }
-        
     }
 }
 

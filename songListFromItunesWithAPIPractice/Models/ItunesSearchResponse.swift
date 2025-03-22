@@ -12,7 +12,7 @@ struct ItunesSearchResponse:Codable {
     
 }
 struct SongOfSearchResults: Codable {
-    let artistName: String
+    let artistName: Int
     let trackName: String
     let previewUrl: URL
     let artworkUrl100: URL
